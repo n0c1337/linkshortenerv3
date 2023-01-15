@@ -22,18 +22,10 @@ func NewWebServer(db *gorm.DB, auth *auth.Authorization) (ws *WebServer) {
 	ws.db = db
 	ws.auth = auth
 
+	ws.setupWebServer()
 	ws.registerHandlers()
 
 	return
-}
-
-func (ws *WebServer) registerHandlers() {
-	api := ws.app.Group("/api")
-	userGroup := api.Group("/users")
-
-	// User routes
-	userGroup.Post("/", ws.CreateUser)
-	userGroup.Get("/:id", ws.GetUser)
 }
 
 func (ws *WebServer) setupWebServer() {
@@ -52,7 +44,25 @@ func (ws *WebServer) setupWebServer() {
 	}))
 }
 
+func (ws *WebServer) registerHandlers() {
+	api := ws.app.Group("/api")
+	userRouterGroup := api.Group("/users")
+	linkRouterGroup := api.Group("/links")
+
+	// Normal routes
+	ws.app.Get("/redirect/:redirect", ws.redirect)
+
+	// User routes
+	userRouterGroup.Post("/", ws.CreateUser)
+	userRouterGroup.Get("/:id", ws.GetUser)
+
+	// Link routes
+	linkRouterGroup.Post("/", ws.CreateLink)
+	linkRouterGroup.Get("/:discriminator", ws.GetLinkByDiscriminator)
+	linkRouterGroup.Get("/byId/:id", ws.GetLinkById)
+	linkRouterGroup.Delete("/:id", ws.DeleteLink)
+}
+
 func (ws *WebServer) ListenAndServe() error {
-	ws.setupWebServer()
-	return ws.app.Listen("192.168.2.113:8080")
+	return ws.app.Listen("192.168.2.114:8080")
 }

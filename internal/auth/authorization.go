@@ -15,7 +15,7 @@ func NewAuthorization() (auth *Authorization) {
 	return
 }
 
-func (auth *Authorization) CreateHash(password string) string {
+func (*Authorization) CreateHash(password string) string {
 	hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
 	if err != nil {
 		log.Fatal(err)
@@ -23,7 +23,7 @@ func (auth *Authorization) CreateHash(password string) string {
 	return hash
 }
 
-func (auth *Authorization) CheckHash(password, hash string) bool {
+func (*Authorization) CheckHash(password, hash string) bool {
 	match, err := argon2id.ComparePasswordAndHash(password, hash)
 	if err != nil {
 		log.Fatal(err)

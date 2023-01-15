@@ -23,10 +23,16 @@ func (ws *WebServer) CreateUser(c *fiber.Ctx) error {
 func (ws *WebServer) GetUser(c *fiber.Ctx) error {
 	var user models.User
 
-	ws.db.First(&user, c.Params("id"))
+	response := ws.db.First(&user, c.Params("id"))
+	if response.Error != nil {
+		return response.Error
+	}
+
 	return c.Status(200).JSON(user)
 }
 
 func (ws *WebServer) DeleteUser(c *fiber.Ctx) error {
-	return c.SendStatus(200)
+	return c.Status(501).JSON(fiber.Map{
+		"Error": "not implemented yet!",
+	})
 }
