@@ -6,3 +6,6 @@ run:
 
 migrate:
 	go run cmd/migrator/migrator.go
+
+docker:
+	docker-compose up
