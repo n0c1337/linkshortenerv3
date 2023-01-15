@@ -6,21 +6,24 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/n0c1337/linkshortener/internal/auth"
+	"github.com/n0c1337/linkshortener/internal/config"
 	"gorm.io/gorm"
 )
 
 type WebServer struct {
-	app  *fiber.App
-	db   *gorm.DB
-	auth *auth.Authorization
+	app    *fiber.App
+	db     *gorm.DB
+	auth   *auth.Authorization
+	config *config.Config
 }
 
-func NewWebServer(db *gorm.DB, auth *auth.Authorization) (ws *WebServer) {
+func NewWebServer(db *gorm.DB, auth *auth.Authorization, cfg *config.Config) (ws *WebServer) {
 	ws = new(WebServer)
 
 	ws.app = fiber.New()
 	ws.db = db
 	ws.auth = auth
+	ws.config = cfg
 
 	ws.setupWebServer()
 	ws.registerHandlers()
@@ -64,5 +67,5 @@ func (ws *WebServer) registerHandlers() {
 }
 
 func (ws *WebServer) ListenAndServe() error {
-	return ws.app.Listen("192.168.2.114:8080")
+	return ws.app.Listen(ws.config.Address)
 }
